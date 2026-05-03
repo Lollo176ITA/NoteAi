@@ -1,1 +1,42 @@
-.gradle
+# Build / Gradle
+.gradle/
+build/
+*/build/
+out/
+captures/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+local.properties
+
+# Android
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+bin/
+gen/
+proguard/
+release/
+
+# Kotlin
+.kotlin/
+
+# Logs / OS
+*.log
+.DS_Store
+Thumbs.db
+hs_err_pid*
+replay_pid*
+
+# Keystores / signing (do NOT commit)
+*.jks
+*.keystore
+keystore.properties
+
+# Schemi Room esportati: opzionali da committare, per ora dentro
+# (commenta la riga sotto se vuoi tenere gli schema in repo per le migrazioni)
+# app/schemas/
