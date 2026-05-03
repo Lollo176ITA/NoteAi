@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NoteAi</string>
+    <string name="projects_title">I tuoi progetti</string>
+    <string name="projects_empty">Nessun progetto. Tocca + per crearne uno.</string>
+    <string name="new_project">Nuovo progetto</string>
+    <string name="project_name_hint">Nome del progetto</string>
+    <string name="notes_empty">Nessuna nota qui. Tocca + per scrivere il primo post-it.</string>
+    <string name="new_note">Nuova nota</string>
+    <string name="note_title_hint">Titolo</string>
+    <string name="note_body_hint">Scrivi qualcosa…</string>
+    <string name="links_section_title">Collegamenti suggeriti</string>
+    <string name="links_section_empty">L\'AI cerchera collegamenti dopo qualche secondo dal salvataggio.</string>
+    <string name="recompute_links">Ricalcola adesso</string>
+    <string name="settings_title">Impostazioni</string>
+    <string name="settings_api_key_label">Chiave NVIDIA NIM</string>
+    <string name="settings_api_key_hint">nvapi-…</string>
+    <string name="settings_api_key_save">Salva</string>
+    <string name="settings_verify_key">Verifica chiave</string>
+    <string name="settings_verify_ok">Chiave valida</string>
+    <string name="settings_verify_fail">Chiave non valida o rete assente</string>
+    <string name="settings_export">Esporta JSON</string>
+    <string name="settings_import">Importa JSON</string>
+    <string name="cancel">Annulla</string>
+    <string name="save">Salva</string>
+    <string name="delete">Elimina</string>
+</resources>
