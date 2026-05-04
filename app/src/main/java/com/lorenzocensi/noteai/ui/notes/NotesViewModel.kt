@@ -34,7 +34,7 @@ class NotesViewModel @Inject constructor(
     val notes: StateFlow<List<Note>> = noteRepo.observeByProject(projectId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    fun createEmptyNote(onCreated: (String) -> Unit) {
+    fun createEmptyNote(onCreated: (Note) -> Unit) {
         viewModelScope.launch {
             val now = System.currentTimeMillis()
             val n = Note(
@@ -46,7 +46,7 @@ class NotesViewModel @Inject constructor(
                 updatedAt = now
             )
             noteRepo.upsert(n)
-            onCreated(n.id)
+            onCreated(n)
         }
     }
 }

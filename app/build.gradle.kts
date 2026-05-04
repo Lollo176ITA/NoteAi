@@ -96,7 +96,6 @@ dependencies {
     implementation(libs.coroutines.android)
 
     implementation(libs.datastore.preferences)
-    implementation(libs.datastore.tink)
     implementation(libs.tink.android)
 
     testImplementation(libs.junit)
