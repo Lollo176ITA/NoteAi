@@ -12,6 +12,58 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  app-next:
+    name: App Next build and tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools platforms;android-36 build-tools;36.0.0'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Run App Next unit tests
+        run: ./gradlew :appNext:testDebugUnitTest --no-daemon --stacktrace
+
+      - name: Build App Next debug APK
+        run: ./gradlew :appNext:assembleDebug --no-daemon --stacktrace
+
+      - name: Upload App Next debug APK
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: noteai-next-debug-apk
+          path: app-next/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload App Next test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-next-test-reports
+          path: app-next/build/reports/tests/
+          if-no-files-found: ignore
+          retention-days: 7
+
   build:
     name: Build debug APK
     runs-on: ubuntu-latest

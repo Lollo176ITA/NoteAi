@@ -26,3 +26,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "NoteAi"
 include(":app")
+include(":appNext")
+project(":appNext").projectDir = file("app-next")
