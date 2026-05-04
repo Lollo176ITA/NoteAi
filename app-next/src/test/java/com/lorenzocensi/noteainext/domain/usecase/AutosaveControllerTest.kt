@@ -13,10 +13,10 @@ class AutosaveControllerTest {
     @Test
     fun savesOnlyLatestScheduledValueAfterDebounce() = runTest {
         val saved = mutableListOf<String>()
-        val controller = AutosaveController(
+        val controller = AutosaveController<String>(
             scope = this,
             delayMillis = 100L,
-            save = { saved += it }
+            save = { value -> saved += value }
         )
 
         controller.schedule("prima")
