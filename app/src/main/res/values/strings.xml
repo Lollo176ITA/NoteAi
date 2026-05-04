@@ -24,4 +24,13 @@
     <string name="cancel">Annulla</string>
     <string name="save">Salva</string>
     <string name="delete">Elimina</string>
+
+    <string name="ai_status_pending">Analizzo tra %1$ds…</string>
+    <string name="ai_status_running">L\'AI sta cercando collegamenti…</string>
+    <string name="ai_status_done_zero">Nessun collegamento trovato</string>
+    <string name="ai_status_done_n">Trovati %1$d collegamenti</string>
+    <string name="ai_status_missing_key">Manca la chiave NIM per l\'AI</string>
+    <string name="ai_status_missing_key_cta">Vai a Impostazioni</string>
+    <string name="ai_status_error">Errore AI: %1$s</string>
+    <string name="ai_status_retry">Riprova</string>
 </resources>

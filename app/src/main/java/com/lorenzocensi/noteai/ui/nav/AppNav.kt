@@ -50,7 +50,8 @@ fun AppNav() {
                     nav.navigate(Routes.editor(otherNoteId)) {
                         launchSingleTop = true
                     }
-                }
+                },
+                onOpenSettings = { nav.navigate(Routes.SETTINGS) }
             )
         }
         composable(Routes.SETTINGS) {
