@@ -11,6 +11,7 @@ import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import java.io.IOException
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -57,7 +58,13 @@ class NimClientFactory @Inject constructor(
 
 internal class AuthInterceptor(private val store: ApiKeyStore) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        val key = runBlocking { store.getKey() } ?: throw MissingApiKeyException()
+        val key = try {
+            runBlocking { store.getKey() }
+        } catch (io: IOException) {
+            throw io
+        } catch (t: Throwable) {
+            throw IOException("Lettura chiave NIM fallita", t)
+        } ?: throw MissingApiKeyException()
         val req = chain.request().newBuilder()
             .addHeader("Authorization", "Bearer $key")
             .addHeader("Accept", "application/json")

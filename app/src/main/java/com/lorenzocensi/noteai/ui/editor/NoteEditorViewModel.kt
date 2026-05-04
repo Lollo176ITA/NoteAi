@@ -1,5 +1,6 @@
 package com.lorenzocensi.noteai.ui.editor
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,11 +15,10 @@ import com.lorenzocensi.noteai.domain.usecase.SaveNoteUseCase
 import com.lorenzocensi.noteai.work.ConnectionDiscoveryWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -48,19 +48,7 @@ class NoteEditorViewModel @Inject constructor(
             val info = infos.maxByOrNull { it.runAttemptCount + it.state.ordinal }
                 ?: return@flatMapLatest flowOf(AiStatus.Idle)
             when (info.state) {
-                WorkInfo.State.ENQUEUED, WorkInfo.State.BLOCKED -> flow {
-                    while (true) {
-                        val now = System.currentTimeMillis()
-                        val target = info.nextScheduleTimeMillis
-                        val secondsLeft = ((target - now) / 1000L)
-                            .coerceAtLeast(0L)
-                            .coerceAtMost(60L)
-                            .toInt()
-                        emit(AiStatus.Pending(secondsLeft))
-                        if (secondsLeft <= 0) break
-                        delay(1000)
-                    }
-                }
+                WorkInfo.State.ENQUEUED, WorkInfo.State.BLOCKED -> flowOf(AiStatus.Pending(0))
                 WorkInfo.State.RUNNING -> flowOf(AiStatus.Running)
                 WorkInfo.State.SUCCEEDED -> flowOf(
                     AiStatus.Done(info.outputData.getInt(ConnectionDiscoveryWorker.KEY_LINK_COUNT, 0))
@@ -77,24 +65,40 @@ class NoteEditorViewModel @Inject constructor(
                 WorkInfo.State.CANCELLED -> flowOf(AiStatus.Idle)
             }
         }
+        .catch { t ->
+            Log.e(TAG, "aiStatus flow failed", t)
+            emit(AiStatus.Idle)
+        }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AiStatus.Idle)
 
     fun update(title: String, body: String) {
         viewModelScope.launch {
-            val existing = noteRepo.getById(noteId) ?: return@launch
-            val updated = existing.copy(
-                title = title,
-                body = body,
-                updatedAt = System.currentTimeMillis()
-            )
-            saveNote(updated, runImmediately = false)
+            try {
+                val existing = noteRepo.getById(noteId) ?: return@launch
+                val updated = existing.copy(
+                    title = title,
+                    body = body,
+                    updatedAt = System.currentTimeMillis()
+                )
+                saveNote(updated, runImmediately = false)
+            } catch (t: Throwable) {
+                Log.e(TAG, "update failed", t)
+            }
         }
     }
 
     fun recomputeNow() {
-        saveNote.enqueueDiscovery(noteId, immediate = true)
+        try {
+            saveNote.enqueueDiscovery(noteId, immediate = true)
+        } catch (t: Throwable) {
+            Log.e(TAG, "recomputeNow failed", t)
+        }
     }
 
     suspend fun lookupLinkedNoteTitle(otherId: String): String? =
-        noteRepo.getById(otherId)?.title
+        runCatching { noteRepo.getById(otherId)?.title }.getOrNull()
+
+    private companion object {
+        const val TAG = "NoteEditorVM"
+    }
 }
